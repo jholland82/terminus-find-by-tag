@@ -1,0 +1,33 @@
+{
+    "name": "jholland82/terminus-find-by-tag",
+    "description": "Find By Tag - A Terminus plugin to find sites by tag.",
+    "homepage": "https://github.com/jholland82/terminus-find-by-tag",
+    "authors": [
+        {
+            "name": "Jeff Holland",
+            "email": "jeff.holland@gmail.com",
+            "homepage": "https://github.com/jholland82",
+            "role": "Developer"
+        }
+    ],
+    "type": "terminus-plugin",
+    "keywords": [
+        "pantheon",
+        "terminus",
+        "tag",
+        "find",
+        "site"
+    ],
+    "support": {
+        "issues": "https://github.com/jholland82/terminus-find-by-tag/issues"
+    },
+    "license": "MIT",
+    "require": {
+        "php": "^5.5 || ^7.0"
+    },
+    "extra": {
+        "terminus": {
+            "compatible-version": "^1"
+        }
+    }
+}
