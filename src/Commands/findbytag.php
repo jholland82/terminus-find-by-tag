@@ -9,7 +9,7 @@ namespace TerminusPluginProject\TerminusFindByTag\Commands;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\Site\SiteCommand;
 
-class FindByTag extends SiteCommand
+class FindByTagCommand extends SiteCommand
 {
     /**
      * Displays the sites that use a Tag

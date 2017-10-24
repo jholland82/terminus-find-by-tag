@@ -26,7 +26,7 @@
         "php": "^5.5 || ^7.0"
     },
     "autoload": {
-        "psr-4": { "jholland82\\TerminusFindByTag\\": "src" }
+        "psr-4": { "TerminusPluginProject\\TerminusFindByTag\\": "src" }
     },
     "extra": {
         "terminus": {
