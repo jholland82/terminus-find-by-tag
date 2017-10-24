@@ -16,7 +16,7 @@ class FindByTag extends SiteCommand
      *
      * @authorize
      *
-     * @command site:tag:find
+     * @command site:tag
      *
      * @field-labels
      *     name: Name
@@ -33,7 +33,7 @@ class FindByTag extends SiteCommand
      *
      * @return RowsOfFields
      *
-     * @usage terminus site:tag:find
+     * @usage terminus site:tag
      *     Displays the list of all sites accessible to the currently logged-in user.
      */
     public function getByTag($options = ['tag' => null])
