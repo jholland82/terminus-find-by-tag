@@ -1,10 +1,10 @@
 <?php
 /**
- * This command will display the status of all available Pantheon site environments.
+ * This command will display the sites that use a tag
  *
  * See README.md for usage information.
  */
-namespace TerminusPluginProject\TerminusSiteStatus\Commands;
+namespace TerminusPluginProject\TerminusFindByTag\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\Site\SiteCommand;
@@ -12,7 +12,7 @@ use Pantheon\Terminus\Commands\Site\SiteCommand;
 class FindByTag extends SiteCommand
 {
     /**
-     * Displays the status of all site environments.
+     * Displays the sites that use a Tag
      *
      * @authorize
      *
@@ -46,7 +46,7 @@ class FindByTag extends SiteCommand
         if (empty($sites)) {
             $this->log()->notice('You have no sites.');
         }
-        $status = [];
+        $tags = [];
         foreach ($sites as $site) {
             if ($environments = $this->getSite($site['name'])->getEnvironments()->serialize()) {
                 foreach ($environments as $environment) {
@@ -59,11 +59,11 @@ class FindByTag extends SiteCommand
                         list(, $env) = $this->getSiteEnv($site_env);
                         $diff = (array)$env->diffstat();
                         $environment['condition'] = empty($diff) ? 'clean' : 'dirty';
-                        $status[] = $environment;
+                        $tags[] = $environment;
                     }
                 }
             }
         }
-        return new RowsOfFields($status);
+        return new RowsOfFields($tags);
     }
 }
