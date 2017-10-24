@@ -16,7 +16,7 @@ class FindByTagCommand extends SiteCommand
      *
      * @authorize
      *
-     * @command site:tag
+     * @command site:findbytag
      *
      * @field-labels
      *     name: Name
@@ -33,13 +33,13 @@ class FindByTagCommand extends SiteCommand
      *
      * @return RowsOfFields
      *
-     * @usage terminus site:tag
+     * @usage terminus site:findbytag
      *     Displays the list of all sites accessible to the currently logged-in user.
      */
-    public function tag($options = ['tag' => null])
+    public function findbytag($entered_tag)
     {
-        if (isset($options['tag']) && !is_null($tag = $options['tag'])) {
-            $this->sites->filterByTag($tag);
+        if (isset($entered_tag)) {
+            $this->sites->filterByTag($entered_tag);
         }
 
         $sites = $this->sites->serialize();
