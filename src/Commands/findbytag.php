@@ -1,45 +1,97 @@
 <?php
-
-namespace TerminusPluginProject\TerminusDeveloper\Commands;
-
-use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Exceptions\TerminusException;
-
 /**
- * Plugin development assistant.
+ * This command will display the status of all available Pantheon site environments.
+ *
+ * See README.md for usage information.
  */
-class FindByTagCommand extends TerminusCommand
+namespace TerminusPluginProject\TerminusSiteStatus\Commands;
+
+use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Pantheon\Terminus\Commands\Site\SiteCommand;
+
+class FindByTag extends SiteCommand
 {
-
     /**
-     * Plugin development assistant.
+     * Displays the status of all site environments.
      *
-     * @command site:tag:help
+     * @authorize
      *
-     * @option keyword Keyword to search in help
+     * @command site:status
      *
-     * @usage terminus site:tag:help <keyword> [--output=browse|print]
-     *     Displays the results of a search based on the keyword provided.
+     * @field-labels
+     *     name: Name
+     *     id: Env
+     *     domain: Domain
+     *     created: Created
+     *     service_level: Service
+     *     framework: Framework
+     *     connection_mode: Mode
+     *     php_version: PHP
+     *     locked: Locked
+     *     frozen: Frozen
+     *     condition: Condition
+     *
+     * @return RowsOfFields
+     *
+     * @option team Team-only filter
+     * @option owner Owner filter; "me" or user UUID
+     * @option org Organization filter; "all" or organization UUID
+     * @option name Name filter
+     *
+     * @usage terminus site:status
+     *     Displays the list of all sites accessible to the currently logged-in user.
+     * @usage terminus site:status --team
+     *     Displays the list of sites of which the currently logged-in user is a member of the team.
+     * @usage terminus site:status --owner=<user>
+     *     Displays the list of accessible sites owned by the user with UUID <user>.
+     * @usage terminus site:status --owner=me
+     *     Displays the list of sites owned by the currently logged-in user.
+     * @usage terminus site:status --org=<org>
+     *     Displays a list of accessible sites associated with the <org> organization.
+     * @usage terminus site:status --org=all
+     *     Displays a list of accessible sites associated with any organization of which the currently logged-in is a member.
+     * @usage terminus site:status --name=<regex>
+     *     Displays a list of accessible sites with a name that matches <regex>.
      */
-    public function help($keyword = '', $options = ['output' => 'browse']) {
-
-        if (!$keyword) {
-            $message = "Usage: terminus site:tag:help <keyword> [--output=browse|print]";
-            throw new TerminusException($message);
+    public function getByTag($options = ['team' => false, 'owner' => null, 'org' => null, 'tag' => null,])
+    {
+        $this->sites()->fetch(
+            [
+                'org_id' => isset($options['org']) ? $options['org'] : null,
+                'team_only' => isset($options['team']) ? $options['team'] : false,
+            ]
+        );
+        if (isset($options['tag']) && !is_null($tag = $options['tag'])) {
+            $this->sites->filterByTag($tag);
         }
-
-        switch (php_uname('s')) {
-            case 'Linux':
-                $cmd = 'xdg-open';
-                break;
-            case 'Darwin':
-                $cmd = 'open';
-                break;
-            case 'Windows NT':
-                $cmd = 'start';
-                break;
-            default:
-                throw new TerminusException('Operating system not supported.');
+        if (isset($options['owner']) && !is_null($owner = $options['owner'])) {
+            if ($owner == 'me') {
+                $owner = $this->session()->getUser()->id;
+            }
+            $this->sites->filterByOwner($owner);
         }
+        $sites = $this->sites->serialize();
+        if (empty($sites)) {
+            $this->log()->notice('You have no sites.');
+        }
+        $status = [];
+        foreach ($sites as $site) {
+            if ($environments = $this->getSite($site['name'])->getEnvironments()->serialize()) {
+                foreach ($environments as $environment) {
+                    if ($environment['initialized'] == 'true') {
+                        $environment['name'] = $site['name'];
+                        $environment['framework'] = $site['framework'];
+                        $environment['service_level'] = $site['service_level'];
+                        $environment['frozen'] = $site['frozen'];
+                        $site_env = $site['name'] . '.' . $environment['id'];
+                        list(, $env) = $this->getSiteEnv($site_env);
+                        $diff = (array)$env->diffstat();
+                        $environment['condition'] = empty($diff) ? 'clean' : 'dirty';
+                        $status[] = $environment;
+                    }
+                }
+            }
+        }
+        return new RowsOfFields($status);
     }
 }
