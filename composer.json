@@ -10,6 +10,7 @@
             "role": "Developer"
         }
     ],
+    "version": "0.0.1",
     "type": "terminus-plugin",
     "keywords": [
         "pantheon",
