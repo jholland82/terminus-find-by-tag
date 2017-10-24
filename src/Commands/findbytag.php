@@ -36,7 +36,7 @@ class FindByTagCommand extends SiteCommand
      * @usage terminus site:tag
      *     Displays the list of all sites accessible to the currently logged-in user.
      */
-    public function getByTag($options = ['tag' => null])
+    public function tag($options = ['tag' => null])
     {
         if (isset($options['tag']) && !is_null($tag = $options['tag'])) {
             $this->sites->filterByTag($tag);
