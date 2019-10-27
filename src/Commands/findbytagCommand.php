@@ -19,11 +19,7 @@ class FindByTagCommand extends SiteCommand
      * @command site:findbytag
      *
      * @field-labels
-     *     name: Name
-     *     id: Env
-     *     domain: Domain
-     *     created: Created
-     *     locked: Locked
+     *     entered_tag: Tag we want to find
      *
      * @return RowsOfFields
      *
@@ -49,6 +45,10 @@ class FindByTagCommand extends SiteCommand
                         $site_env = $site['name'] . '.' . $environment['id'];
                         list(, $env) = $this->getSiteEnv($site_env);
                         $diff = (array)$env->diffstat();
+                        $tags = ($environment['tags']);
+                        if ($entered_tag in $tags) {
+                          //save site here
+                        }
                     }
                 }
             }
